@@ -7,6 +7,8 @@ ON Vendas
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
         SELECT 1
         FROM inserted i
@@ -26,6 +28,8 @@ ON Vendas
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
 	IF EXISTS(
 	SELECT 1
 	FROM inserted i
@@ -43,6 +47,8 @@ ON ItensVendas
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
         SELECT 1
         FROM inserted i
@@ -59,15 +65,17 @@ GO
 
 CREATE TRIGGER TG_LIMITE_ITENS_POR_VENDA
 ON ItensVendas
-FOR INSERT
+AFTER INSERT, UPDATE
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
-        SELECT i.idVenda
-        FROM inserted i
-        JOIN ItensVendas iv ON iv.idVenda = i.idVenda
-        GROUP BY i.idVenda
-        HAVING COUNT(iv.idMedicamento) > 3
+        SELECT 1
+        FROM ItensVendas iv
+        WHERE iv.idVenda IN (SELECT DISTINCT idVenda FROM inserted)
+        GROUP BY iv.idVenda
+        HAVING COUNT(*) > 3
     )
     BEGIN
         RAISERROR('Cada venda pode conter no máximo 3 itens.', 16, 1);
@@ -81,6 +89,8 @@ ON Compras
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
         SELECT 1
         FROM inserted i
@@ -100,6 +110,8 @@ ON Compras
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
 	IF EXISTS(
 	SELECT 1
 	FROM inserted i
@@ -117,6 +129,8 @@ ON ItensCompras
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
         SELECT 1
         FROM inserted i
@@ -133,15 +147,17 @@ GO
 
 CREATE TRIGGER TG_LIMITE_ITENS_POR_COMPRA
 ON ItensCompras
-FOR INSERT
+AFTER INSERT, UPDATE
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
-        SELECT i.idCompra
-        FROM inserted i
-        JOIN ItensCompras c ON c.idCompra = i.idCompra
-        GROUP BY i.idCompra
-        HAVING COUNT(c.idPrincipio) > 3
+        SELECT 1
+        FROM ItensCompras ic
+        WHERE ic.idCompra IN (SELECT DISTINCT idCompra FROM inserted)
+        GROUP BY ic.idCompra
+        HAVING COUNT(*) > 3
     )
     BEGIN
         RAISERROR('Cada compra pode conter no máximo 3 itens.', 16, 1);
@@ -155,6 +171,8 @@ ON Producoes
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
         SELECT 1
         FROM inserted i
@@ -174,6 +192,8 @@ ON Ingredientes
 FOR INSERT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     IF EXISTS (
         SELECT 1
         FROM inserted i
