@@ -67,7 +67,7 @@ CREATE TABLE PrincipiosAtivos(
     idPrincipio INT NOT NULL PRIMARY KEY IDENTITY(1,1),
     Nome VARCHAR(20) NOT NULL UNIQUE,
     DataCadastro DATE NOT NULL CONSTRAINT DF_DataCadastroPrincipio DEFAULT CAST(GETDATE() AS DATE),
-    Situacao INT NOT NULL DF_SituacaoPrincipioAtivo DEFAULT 1
+    Situacao INT NOT NULL CONSTRAINT DF_SituacaoPrincipioAtivo DEFAULT 1
 );
 
 CREATE TABLE ItensCompras(
