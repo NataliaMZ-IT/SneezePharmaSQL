@@ -1,7 +1,7 @@
 USE SneezePharma;
 GO
 
--- Relatório de Vendas por Período
+-- Report of Sales per Period
 SELECT v.DataVenda, v.idVenda, 
   (i.Quantidade * m.ValorVenda) AS ValorTotalItem,
   CONCAT(c.Nome, ' ', c.Sobrenome) AS NomeCliente,
@@ -26,7 +26,7 @@ WHERE v.DataVenda = '2025-11-07'
 GROUP BY v.idVenda, v.DataVenda, c.Nome, c.Sobrenome, c.CPF;
 GO
 
--- Relatório de Medicamentos mais Vendidos
+-- Report of Medicine Most Sold
 SELECT m.Nome, c.Nome AS Categoria, i.idVenda, i.Quantidade, m.ValorVenda AS Valor,
   (m.ValorVenda * i.Quantidade) AS ValorTotalNaVenda, v.DataVenda
 FROM ItensVendas i
@@ -47,7 +47,7 @@ GROUP BY m.Nome, c.Nome
 ORDER BY QtdVendida DESC;
 GO
 
--- Relatório de Compras por Fornecedor
+-- Report of Purchases per Supplier
 SELECT f.RazaoSocial, c.idCompra, p.Nome, i.Quantidade,
   i.ValorUnitario, i.ValorTotal, c.DataCompra 
 FROM Compras c
