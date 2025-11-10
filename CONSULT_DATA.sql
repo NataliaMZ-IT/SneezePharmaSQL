@@ -1,7 +1,7 @@
 USE SneezePharma;
 GO
 
--- Customer Data
+-- Active Customer Data
 SELECT c.DataCadastro, c.idCliente, 
   CONCAT(c.Nome, ' ', c.Sobrenome) AS Nome, 
   c.CPF, c.DataNascimento, sc.Situacao,
@@ -11,12 +11,13 @@ FROM clientes c
 LEFT JOIN TelefonesClientes tc ON c.idCliente = tc.idCliente
 LEFT JOIN SituacaoCliente sc ON sc.id = c.Situacao
 LEFT JOIN Vendas v ON v.idCliente = c.idCliente
-WHERE sc.Situacao = 'Ativo'
+WHERE sc.Situacao = 'Ativo' AND NOT EXISTS (SELECT 1 FROM ClientesRestritos cr WHERE cr.idCliente = c.idCliente)
 GROUP BY c.idCliente, c.Nome, c.Sobrenome, c.CPF, c.DataNascimento, 
   c.DataCadastro, sc.Situacao, tc.CodPais, tc.CodArea, tc.Numero
 ORDER BY c.idCliente;
 GO
 
+-- Inactive Customer Data
 SELECT c.DataCadastro, c.idCliente, 
   CONCAT(c.Nome, ' ', c.Sobrenome) AS Nome, 
   c.CPF, c.DataNascimento, sc.Situacao,
@@ -26,7 +27,7 @@ FROM clientes c
 LEFT JOIN TelefonesClientes tc ON c.idCliente = tc.idCliente
 LEFT JOIN SituacaoCliente sc ON sc.id = c.Situacao
 LEFT JOIN Vendas v ON v.idCliente = c.idCliente
-WHERE sc.Situacao = 'Inativo'
+WHERE sc.Situacao = 'Inativo' AND NOT EXISTS (SELECT 1 FROM ClientesRestritos cr WHERE cr.idCliente = c.idCliente)
 GROUP BY c.idCliente, c.Nome, c.Sobrenome, c.CPF, c.DataNascimento, 
   c.DataCadastro, sc.Situacao, tc.CodPais, tc.CodArea, tc.Numero
 ORDER BY c.idCliente;
@@ -40,26 +41,27 @@ JOIN Clientes c ON c.idCliente = cr.idCliente
 ORDER BY c.idCliente;
 GO
 
--- Supplier Data
+-- Active Supplier Data
 SELECT f.DataCadastro, f.idFornecedor, f.RazaoSocial, f.CNPJ,
   f.DataAbertura, f.Pais, sf.Situacao,
   MAX(c.DataCompra) AS UltimoFornecimento
 FROM Fornecedores f
 JOIN SituacaoFornecedor sf ON sf.id = f.Situacao
 LEFT JOIN Compras c ON c.idFornecedor = f.idFornecedor
-WHERE sf.Situacao = 'Ativo'
+WHERE sf.Situacao = 'Ativo' AND NOT EXISTS (SELECT 1 FROM FornecedoresBloqueados fb WHERE fb.idFornecedor = f.idFornecedor)
 GROUP BY f.idFornecedor, f.CNPJ, f.RazaoSocial, f.DataAbertura, 
   f.DataCadastro, f.Pais, sf.Situacao
 ORDER BY f.idFornecedor;
 GO
 
+-- Inactive Supplier Data
 SELECT f.DataCadastro, f.idFornecedor, f.RazaoSocial, f.CNPJ,
   f.DataAbertura, f.Pais, sf.Situacao,
   MAX(c.DataCompra) AS UltimoFornecimento
 FROM Fornecedores f
 JOIN SituacaoFornecedor sf ON sf.id = f.Situacao
 LEFT JOIN Compras c ON c.idFornecedor = f.idFornecedor
-WHERE sf.Situacao = 'Inativo'
+WHERE sf.Situacao = 'Inativo' AND NOT EXISTS (SELECT 1 FROM FornecedoresBloqueados fb WHERE fb.idFornecedor = f.idFornecedor)
 GROUP BY f.idFornecedor, f.CNPJ, f.RazaoSocial, f.DataAbertura, 
   f.DataCadastro, f.Pais, sf.Situacao
 ORDER BY f.idFornecedor;
@@ -72,7 +74,7 @@ JOIN Fornecedores f ON fb.idFornecedor = f.idFornecedor
 ORDER BY f.idFornecedor;
 GO
 
--- Medicine Data
+-- Active Medicine Data
 SELECT m.DataCadastro, m.idMedicamento, m.Nome, 
   m.CDB, c.Nome AS Categoria,	
   m.ValorVenda AS ValorUnitario, st.Situacao,
@@ -88,6 +90,7 @@ GROUP BY m.idMedicamento, m.Nome, m.ValorVenda, m.DataCadastro,
 ORDER BY m.idMedicamento;
 GO
 
+-- Inactive Medicine Data
 SELECT m.DataCadastro, m.idMedicamento, m.Nome, 
   m.CDB, c.Nome AS Categoria,	
   m.ValorVenda AS ValorUnitario, st.Situacao,
@@ -103,7 +106,7 @@ GROUP BY m.idMedicamento, m.Nome, m.ValorVenda, m.DataCadastro,
 ORDER BY m.idMedicamento;
 GO
 
--- Ingredient Data
+-- Active Ingredient Data
 SELECT pa.DataCadastro, pa.idPrincipio, pa.Nome, sp.Situacao,
   MAX(c.DataCompra) AS UltimoFornecimento
 FROM PrincipiosAtivos pa
@@ -115,6 +118,7 @@ GROUP BY pa.idPrincipio, pa.Nome, pa.DataCadastro, sp.Situacao
 ORDER BY pa.idPrincipio;
 GO
 
+-- Inactive Ingredient Data
 SELECT pa.DataCadastro, pa.idPrincipio, pa.Nome, sp.Situacao,
   MAX(c.DataCompra) AS UltimoFornecimento
 FROM PrincipiosAtivos pa
@@ -126,7 +130,7 @@ GROUP BY pa.idPrincipio, pa.Nome, pa.DataCadastro, sp.Situacao
 ORDER BY pa.idPrincipio;
 GO
 
--- Sales Data
+-- Sales Data with Individual Sales Items
 SELECT v.DataVenda, v.idVenda,
   CONCAT(c.nome, ' ', c.Sobrenome) AS NomeCliente, c.CPF,
   m.Nome AS Medicamento, iv.Quantidade,
@@ -138,10 +142,24 @@ JOIN Medicamentos m ON m.idMedicamento = iv.idMedicamento
 ORDER BY v.DataVenda DESC;
 GO
 
--- Purchases Data
-SELECT  c.DataCompra, c.idCompra, f.RazaoSocial, f.CNPJ,
-  pa.Nome AS PrincipioAtivo,
-  it.Quantidade, it.ValorUnitario, it.ValorTotal AS ValorTotalItem
+-- Sales Data Total
+SELECT v.DataVenda, v.idVenda,
+  SUM(iv.Quantidade * m.ValorVenda) AS ValorTotal,
+  CONCAT(c.nome, ' ', c.Sobrenome) AS NomeCliente, c.CPF,
+  SUM(iv.Quantidade) AS QtdItens,
+  COUNT(iv.idVenda) AS ItemsDistintos
+FROM Vendas v
+JOIN Clientes c ON c.idCliente = v.idCliente
+JOIN ItensVendas iv ON iv.idVenda = v.idVenda
+JOIN Medicamentos m ON m.idMedicamento = iv.idMedicamento
+GROUP BY v.DataVenda, v.idVenda, c.Nome, c.Sobrenome, c.CPF
+ORDER BY v.DataVenda DESC;
+GO
+
+-- Purchases Data with Individual Purchase Items
+SELECT  c.DataCompra, c.idCompra, it.ValorTotal AS ValorTotalItem,
+  pa.Nome AS PrincipioAtivo, f.RazaoSocial AS Fornecedor, f.CNPJ,
+  it.Quantidade, it.ValorUnitario
 FROM Compras c
 JOIN Fornecedores f ON c.idFornecedor = f.idFornecedor
 JOIN ItensCompras it ON c.idCompra = it.idCompra
@@ -149,7 +167,19 @@ JOIN PrincipiosAtivos pa ON pa.idPrincipio = it.idPrincipio
 ORDER BY c.DataCompra DESC;
 GO
 
--- Production Data
+-- Purchase Data Total
+SELECT  c.DataCompra, c.idCompra, SUM(it.ValorTotal) AS ValorTotal, 
+  f.RazaoSocial, f.CNPJ, SUM(it.Quantidade) AS QtdTotalItens,
+  COUNT(it.idCompra) AS ItensDistintos
+FROM Compras c
+JOIN Fornecedores f ON c.idFornecedor = f.idFornecedor
+JOIN ItensCompras it ON c.idCompra = it.idCompra
+JOIN PrincipiosAtivos pa ON pa.idPrincipio = it.idPrincipio
+GROUP BY c.DataCompra, c.idCompra, f.RazaoSocial, f.CNPJ
+ORDER BY c.DataCompra DESC;
+GO
+
+-- Production Data with Individual Ingredients
 SELECT p.DataProducao, p.idProducao, m.Nome AS Medicamento, m.ValorVenda,
   p.Quantidade, (p.Quantidade * m.ValorVenda) AS ValorDeVendaProduzido,
   pa.Nome AS PrincipioAtivo, i.Quantidade AS QtdPrincipioAtivo
