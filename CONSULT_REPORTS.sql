@@ -28,7 +28,8 @@ GROUP BY v.idVenda, v.DataVenda, c.Nome, c.Sobrenome, c.CPF;
 GO
 
 -- Report of Medicine Most Sold
-SELECT m.Nome, c.Nome AS Categoria, i.idVenda, i.Quantidade, m.ValorVenda AS Valor,
+SELECT m.Nome AS Medicamento, c.Nome AS Categoria, i.idVenda, 
+  i.Quantidade, m.ValorVenda AS Valor,
   (m.ValorVenda * i.Quantidade) AS ValorTotalNaVenda, v.DataVenda
 FROM ItensVendas i
 RIGHT JOIN Medicamentos m ON i.idMedicamento = m.idMedicamento
@@ -49,17 +50,17 @@ ORDER BY QtdVendida DESC;
 GO
 
 -- Report of Purchases per Supplier
-SELECT f.RazaoSocial, c.idCompra, p.Nome, i.Quantidade,
-  i.ValorUnitario, i.ValorTotal, c.DataCompra 
+SELECT f.RazaoSocial AS Fornecedor, c.idCompra, p.Nome AS PrincipioAtivo, 
+  i.Quantidade, i.ValorUnitario, i.ValorTotal, c.DataCompra 
 FROM Compras c
 RIGHT JOIN Fornecedores f ON c.idFornecedor = f.idFornecedor
 LEFT JOIN ItensCompras i ON c.idCompra = i.idCompra
 LEFT JOIN PrincipiosAtivos p ON i.idPrincipio = p.idPrincipio;
 
-SELECT f.RazaoSocial, 
+SELECT f.RazaoSocial AS Fornecedor, 
 COUNT(DISTINCT c.idCompra) AS QuantidadeCompras,
 COUNT(i.idCompra) AS ItensComprados,
-ISNULL(SUM(i.Quantidade), 0) AS QtdTotalItems,
+ISNULL(SUM(i.Quantidade), 0) AS QtdTotalItens,
 ISNULL(SUM(i.ValorTotal), 0) AS ValorTotalGasto, 
 MAX(c.DataCompra) AS UltimaCompra
 FROM Compras c
