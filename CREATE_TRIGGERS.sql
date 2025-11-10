@@ -305,6 +305,46 @@ BEGIN
 END;
 GO
 
+-- Trigger that blocks sale if medicine hasn't been produced
+CREATE TRIGGER TG_BLOQUEAR_COMPRA_SEM_PRODUCAO ON ItensVendas
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1 
+        FROM inserted i
+        LEFT JOIN Producoes p ON p.idMedicamento = i.idMedicamento
+        WHERE p.idMedicamento IS NULL
+    )
+    BEGIN
+        RAISERROR('Esse medicamento ainda não foi produzido!', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END;
+GO
+
+-- Trigger that blocks production if ingredient hasn't been bought
+CREATE TRIGGER TB_BLOQUEAR_PRODUCAO_SEM_INGREDIENTE ON Ingredientes
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS(
+        SELECT 1
+        FROM inserted i
+        LEFT JOIN ItensCompras ic ON ic.idPrincipio = i.idPrincipio
+        WHERE ic.idPrincipio IS NULL
+    )
+    BEGIN
+        RAISERROR('Esse ingrediente ainda não foi comprado!', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END;
+GO
+
 -- Trigger that limits items to 3 per order
 CREATE TRIGGER TG_LIMITE_ITENS_POR_VENDA ON ItensVendas
 AFTER INSERT, UPDATE
