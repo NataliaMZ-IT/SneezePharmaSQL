@@ -9,7 +9,8 @@ SELECT v.DataVenda, v.idVenda,
 FROM Vendas v
 JOIN Clientes c ON v.idCliente = c.idCliente
 JOIN ItensVendas i ON v.idVenda = i.idVenda
-JOIN Medicamentos m ON i.idMedicamento = m.idMedicamento;
+JOIN Medicamentos m ON i.idMedicamento = m.idMedicamento
+WHERE v.DataVenda = '2025-11-07';
 
 SELECT 
   v.DataVenda, v.idVenda,
@@ -57,7 +58,8 @@ LEFT JOIN PrincipiosAtivos p ON i.idPrincipio = p.idPrincipio;
 
 SELECT f.RazaoSocial, 
 COUNT(DISTINCT c.idCompra) AS QuantidadeCompras,
-COUNT(i.idCompra) AS ItensComprados, 
+COUNT(i.idCompra) AS ItensComprados,
+ISNULL(SUM(i.Quantidade), 0) AS QtdTotalItems,
 ISNULL(SUM(i.ValorTotal), 0) AS ValorTotalGasto, 
 MAX(c.DataCompra) AS UltimaCompra
 FROM Compras c
