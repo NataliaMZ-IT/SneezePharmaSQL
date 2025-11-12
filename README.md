@@ -8,12 +8,12 @@ The modeling of the database was made based on [this](https://app.brmodeloweb.co
 
 ## Execution
 Files included in this repository:
-* [CREATE_DATABASE.sql](#CREATE_DATABASE.sql)
-* [ADD_KEY_CONSTRAINTS.sql](#ADD_KEY_CONSTRAINTS.sql)
-* [CREATE_TRIGGERS.sql](#CREATE_TRIGGERS.sql)
-* [INSERT_DATA.sql](#INSERT_DATA.sql)
-* [CONSULT_DATA.sql](#CONSULT_DATA.sql)
-* [CONSULT_REPORTS.sql](#CONSULT_REPORTS.sql)
+* [CREATE_DATABASE.sql](#create_databasesql)
+* [ADD_KEY_CONSTRAINTS.sql](#add_key_constraintssql)
+* [CREATE_TRIGGERS.sql](#create_triggerssql)
+* [INSERT_DATA.sql](#insert_datasql)
+* [CONSULT_DATA.sql](#consult_datasql)
+* [CONSULT_REPORTS.sql](#consult_reportssql)
 
 Before executing any file, make sure you are using either [SQL Server Management Studio (SSMS)](https://learn.microsoft.com/en-us/ssms/install/install) or a Universal Database Tool and select MSSQL for the project.  
 1. To create the database correctly, execute the first 3 files as listed above in the same order:  
@@ -58,7 +58,7 @@ For tables that ask for the date of transaction, instead of inserting a date, th
 1. #### CONSULT_DATA.sql
 Contains script for consulting data using `SELECT ` and `JOIN` from all the main tables: **Clients**, **Suppliers**, **Medicine**, **Ingredients**, **Sales**, **Purchases** and **Production**.
 
-2. #### CONSULT_REPORT.sql
+2. #### CONSULT_REPORTS.sql
 Contains script for generating reports using `SELECT` and `JOIN` with varying conditions.
 The reports it can generate are:
 * Sales per Period
