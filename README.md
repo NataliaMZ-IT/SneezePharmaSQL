@@ -1,5 +1,5 @@
 # SneezePharma in SQL  
-Database for a fictional database, SneezePharma.  
+Database for a fictional pharmacy, SneezePharma.  
 
 The modeling of the database was made based on [this](https://app.brmodeloweb.com/#!/publicview/690d58909242e2a9d3b2959b) Entity Relationship Diagram and [this](https://www.drawdb.app/editor?shareId=0724d9333a7af8b9418816b7f4506c9b) Logical Data Model.
 > [!Note]
