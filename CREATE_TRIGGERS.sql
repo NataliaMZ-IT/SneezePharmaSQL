@@ -75,20 +75,28 @@ END;
 GO
 
 CREATE TRIGGER TG_BLOQUEAR_DELETE_MEDICAMENTOS ON Medicamentos
-FOR DELETE
+INSTEAD OF DELETE
 AS
 BEGIN
-    RAISERROR ('Não é possível fazer a exclusão de dados nessa tabela!', 16, 1);
-    ROLLBACK TRANSACTION;
+    RAISERROR ('Não é permitido a exclusão de dados! Ao invés disso, a situação do(s) medicamento(s) mudará para INATIVO.', 16, 1);
+    
+    UPDATE m
+    SET Situacao = 2
+    FROM Medicamentos m
+    JOIN deleted AS d ON m.idMedicamento = d.idMedicamento;
 END;
 GO
 
 CREATE TRIGGER TG_BLOQUEAR_DELETE_PRINCIPIOSATIVOS ON PrincipiosAtivos
-FOR DELETE
+INSTEAD OF DELETE
 AS
 BEGIN
-    RAISERROR ('Não é possível fazer a exclusão de dados nessa tabela!', 16, 1);
-    ROLLBACK TRANSACTION;
+    RAISERROR ('Não é permitido a exclusão de dados! Ao invés disso, a situação do(s) princípio(s) mudará para INATIVO.', 16, 1);
+    
+    UPDATE p
+    SET Situacao = 2
+    FROM PrincipiosAtivos p
+    JOIN deleted AS d ON p.idPrincipio = d.idPrincipio;
 END;
 GO
 
