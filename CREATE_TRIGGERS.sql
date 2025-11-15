@@ -13,11 +13,15 @@ END;
 GO
 
 CREATE TRIGGER TG_BLOQUEAR_DELETE_CLIENTES ON Clientes
-FOR DELETE
+INSTEAD OF DELETE
 AS
 BEGIN
-    RAISERROR ('Não é possível fazer a exclusão de dados nessa tabela!', 16, 1);
-    ROLLBACK TRANSACTION;
+    RAISERROR ('Não é permitido a exclusão de dados! Ao invés disso, a situação do(s) cliente(s) mudará para INATIVO.', 16, 1);
+    
+    UPDATE c
+    SET Situacao = 2
+    FROM Clientes c
+    JOIN deleted AS d ON c.idCliente = d.idCliente;
 END;
 GO
 
@@ -31,11 +35,15 @@ END;
 GO
 
 CREATE TRIGGER TG_BLOQUEAR_DELETE_FORNECEDORES ON Fornecedores
-FOR DELETE
+INSTEAD OF DELETE
 AS
 BEGIN
-    RAISERROR ('Não é possível fazer a exclusão de dados nessa tabela!', 16, 1);
-    ROLLBACK TRANSACTION;
+    RAISERROR ('Não é permitido a exclusão de dados! Ao invés disso, a situação do(s) fornecedor(es) mudará para INATIVO.', 16, 1);
+    
+    UPDATE f
+    SET Situacao = 2
+    FROM Fornecedores f
+    JOIN deleted AS d ON f.idFornecedor = d.idFornecedor;
 END;
 GO
 
