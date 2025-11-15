@@ -11,19 +11,21 @@ Files included in this repository:
 * [CREATE_DATABASE.sql](#create_databasesql)
 * [ADD_KEY_CONSTRAINTS.sql](#add_key_constraintssql)
 * [CREATE_TRIGGERS.sql](#create_triggerssql)
+* [CREATE_PROCEDURES.sql](#create_proceduressql)
 * [INSERT_DATA.sql](#insert_datasql)
 * [CONSULT_DATA.sql](#consult_datasql)
 * [CONSULT_REPORTS.sql](#consult_reportssql)
 
 Before executing any file, make sure you are using either [SQL Server Management Studio (SSMS)](https://learn.microsoft.com/en-us/ssms/install/install) or a Universal Database Tool and select MSSQL for the project.  
-1. To create the database correctly, execute the first 3 files as listed above in the same order:  
+1. To **create the database** correctly, execute the first 4 files as listed above in the same order:  
 ```
 CREATE_DATABASE.sql
 ADD_KEY_CONSTRAINTS.sql
 CREATE_TRIGGERS.sql
+CREATE_PROCEDURES.sql
 ```
-2. Once the database has been properly set up, you may execute `INSERT_DATA.sql` to insert some standard example data into all tables.  
-3. After the tables have been populated with data, you may execute `CONSULT_DATA.sql` or `CONSULT_REPORTS.sql` to show the inserted data.
+2. Once the database has been properly set up, you may execute `INSERT_DATA.sql` to **insert some standard example data** into all tables, or you can **manually insert data** by using `INSERT` statements in conjunction with the added procedures.
+3. After the tables have been populated with data, execute `CONSULT_DATA.sql` or `CONSULT_REPORTS.sql`, or utilize the added procedures, to **show the inserted data**.
 </br>
 
 ## Files
@@ -46,6 +48,17 @@ In it are triggers that can:
 * Block *Production* if *Ingredient* hasn't been bought;
 * Block *Sale* if *Medicine* hasn't been produced;
 * Limit *Sales* and *Purchase Items* to 3 per ID.
+
+4. #### CREATE_PROCEDURES.sql
+Contains the script for creating procedures and types used for inserting and consulting data from the database.  
+It in are procedures for:
+* Inserting *Purchase Items* with a new *Purchase*
+* Inserting *Sales Items* with a new *Sale*
+* Inserting *Ingredients* with a new *Production*
+* Inserting *Telephone* numbers with a new *Customer* account
+* Generating reports for *Sales* per Period
+* Generating reports for *Medicine* Most Sold
+* Generating reports for *Purchases* per Supplier
 
 ### Inserting Data 
 
